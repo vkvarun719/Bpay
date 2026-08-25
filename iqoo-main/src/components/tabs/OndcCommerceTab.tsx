@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Store, 
   ShoppingCart, 
@@ -13,7 +13,9 @@ import {
   TrendingDown,
   Navigation,
   Clock,
-  ShieldCheck
+  ShieldCheck,
+  Phone,
+  Compass
 } from 'lucide-react';
 import { OndcProduct, CartItem, Language, UserPersona, Transaction } from '../../types';
 import { translations } from '../../data/translations';
@@ -49,6 +51,7 @@ export const OndcCommerceTab: React.FC<OndcCommerceTabProps> = ({
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
   const [activeTrackingOrder, setActiveTrackingOrder] = useState<any | null>(null);
   const [deliveryStep, setDeliveryStep] = useState<number>(1); // 1: Placed, 2: Packing, 3: On The Way, 4: Delivered
+  const [riderProgressPercent, setRiderProgressPercent] = useState<number>(15);
 
   const categories = [
     { id: 'all', label: 'All Items' },
@@ -101,13 +104,34 @@ export const OndcCommerceTab: React.FC<OndcCommerceTabProps> = ({
     });
 
     setDeliveryStep(1);
+    setRiderProgressPercent(15);
     setIsCheckoutOpen(false);
     onClearCart();
 
     // Simulate real-time delivery GPS progression
-    setTimeout(() => setDeliveryStep(2), 3000);
-    setTimeout(() => setDeliveryStep(3), 7000);
-    setTimeout(() => setDeliveryStep(4), 14000);
+    setTimeout(() => {
+      setDeliveryStep(2);
+      setRiderProgressPercent(40);
+    }, 2800);
+
+    setTimeout(() => {
+      setDeliveryStep(3);
+      setRiderProgressPercent(75);
+      const msg = currentLang === 'en'
+        ? 'Your grocery order has been picked up by rider Sanjay! Arriving in 5 minutes.'
+        : 'Aapka order Sanjay ne pick kar liya hai! 5 minute me pahunchega.';
+      soundEngine.speakText(msg, currentLang);
+    }, 6500);
+
+    setTimeout(() => {
+      setDeliveryStep(4);
+      setRiderProgressPercent(100);
+      soundEngine.playSuccessChime();
+      const msg = currentLang === 'en'
+        ? 'Order Delivered! Thank you for supporting your local Kirana store.'
+        : 'Order Delivered! Dhanyawad for supporting local Kirana store.';
+      soundEngine.speakText(msg, currentLang);
+    }, 12000);
   };
 
   return (
@@ -128,7 +152,7 @@ export const OndcCommerceTab: React.FC<OndcCommerceTabProps> = ({
             Direct from Local Shops — 0% Platform Commission
           </h2>
           <p className="text-xs text-slate-400">
-            Why pay 25% extra markups on Quick Commerce apps? Buy straight from your neighborhood kirana store.
+            Why pay 25% extra markups on Quick Commerce apps? Buy straight from your neighborhood kirana store at true mandi prices.
           </p>
         </div>
 
@@ -138,7 +162,7 @@ export const OndcCommerceTab: React.FC<OndcCommerceTabProps> = ({
             className="flex-1 md:flex-none flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20 hover:brightness-110 active:scale-95 transition"
           >
             <Sparkles className="w-4 h-4" />
-            <span>"Bolo aur Kharido" (Voice Search)</span>
+            <span>{t.speakAndBuy}</span>
           </button>
           
           {cart.length > 0 && (
@@ -153,7 +177,7 @@ export const OndcCommerceTab: React.FC<OndcCommerceTabProps> = ({
         </div>
       </div>
 
-      {/* 0% Commission Comparison Widget */}
+      {/* 0% Commission & Price Transparency Widget */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400">
@@ -161,7 +185,7 @@ export const OndcCommerceTab: React.FC<OndcCommerceTabProps> = ({
           </div>
           <div>
             <div className="text-xs font-bold text-emerald-300">0% Commission to Kirana</div>
-            <div className="text-[11px] text-slate-400">100% of your money goes to local shopkeeper</div>
+            <div className="text-[11px] text-slate-400">100% of purchase value directly reaches your neighborhood merchant</div>
           </div>
         </div>
 
@@ -171,7 +195,7 @@ export const OndcCommerceTab: React.FC<OndcCommerceTabProps> = ({
           </div>
           <div>
             <div className="text-xs font-bold text-amber-300">15-Minute Local Delivery</div>
-            <div className="text-[11px] text-slate-400">Hyperlocal dispatch from within 1.5 km radius</div>
+            <div className="text-[11px] text-slate-400">Hyperlocal rider dispatch within 1.5 km radar</div>
           </div>
         </div>
 
@@ -180,8 +204,8 @@ export const OndcCommerceTab: React.FC<OndcCommerceTabProps> = ({
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs font-bold text-blue-300">Merchant Credit Scoring</div>
-            <div className="text-[11px] text-slate-400">Every order boosts merchant's loan eligibility</div>
+            <div className="text-xs font-bold text-blue-300">Merchant Credit Booster</div>
+            <div className="text-[11px] text-slate-400">Orders build Bharat Credit Score for Kirana loans</div>
           </div>
         </div>
       </div>
@@ -290,16 +314,16 @@ export const OndcCommerceTab: React.FC<OndcCommerceTabProps> = ({
         })}
       </div>
 
-      {/* Live Active Delivery Tracker Card */}
+      {/* Live Active Delivery Tracker with Animated GPS Map */}
       {activeTrackingOrder && (
         <div className="glass-panel p-6 rounded-3xl border border-emerald-500/40 bg-slate-950/90 shadow-2xl animate-slideUp">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-4 border-b border-slate-800">
             <div>
               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                Live ONDC Hyperlocal Tracking
+                Live ONDC Hyperlocal GPS Dispatch
               </span>
               <h3 className="font-extrabold text-base text-slate-100 mt-1">
-                Order #{activeTrackingOrder.id} • Arriving in ~{deliveryStep === 4 ? '0' : activeTrackingOrder.etaMinutes} mins
+                Order #{activeTrackingOrder.id} • {deliveryStep === 4 ? 'Delivered!' : `Arriving in ~${Math.max(1, Math.round(12 * (1 - riderProgressPercent / 100)))} mins`}
               </h3>
               <p className="text-xs text-slate-400">
                 Kirana: {activeTrackingOrder.kiranaName} • Rider: {activeTrackingOrder.deliveryBoy}
@@ -313,33 +337,58 @@ export const OndcCommerceTab: React.FC<OndcCommerceTabProps> = ({
 
           {/* Stepper Progression */}
           <div className="grid grid-cols-4 gap-2 my-5 text-center text-xs">
-            <div className={`p-2.5 rounded-xl border ${deliveryStep >= 1 ? 'bg-emerald-950/70 border-emerald-500 text-emerald-300 font-bold' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
+            <div className={`p-2.5 rounded-xl border transition ${deliveryStep >= 1 ? 'bg-emerald-950/70 border-emerald-500 text-emerald-300 font-bold' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
               ✓ 1. Placed
             </div>
-            <div className={`p-2.5 rounded-xl border ${deliveryStep >= 2 ? 'bg-emerald-950/70 border-emerald-500 text-emerald-300 font-bold' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
+            <div className={`p-2.5 rounded-xl border transition ${deliveryStep >= 2 ? 'bg-emerald-950/70 border-emerald-500 text-emerald-300 font-bold' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
               📦 2. Packing
             </div>
-            <div className={`p-2.5 rounded-xl border ${deliveryStep >= 3 ? 'bg-emerald-950/70 border-emerald-500 text-emerald-300 font-bold animate-pulse' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
+            <div className={`p-2.5 rounded-xl border transition ${deliveryStep >= 3 ? 'bg-emerald-950/70 border-emerald-500 text-emerald-300 font-bold animate-pulse' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
               🛵 3. On Way
             </div>
-            <div className={`p-2.5 rounded-xl border ${deliveryStep >= 4 ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
+            <div className={`p-2.5 rounded-xl border transition ${deliveryStep >= 4 ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
               🎉 4. Delivered
             </div>
           </div>
 
-          {/* Mock GPS Map View */}
-          <div className="relative h-28 rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden flex items-center justify-center">
-            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:16px_16px]"></div>
-            <div className="relative z-10 flex items-center gap-6 text-xs font-bold text-slate-300">
-              <div className="flex items-center gap-1.5 bg-slate-950/90 px-3 py-1.5 rounded-xl border border-slate-700">
-                <span>🏪 Indore Kirana</span>
+          {/* Animated SVG GPS Live Route Map */}
+          <div className="relative h-36 rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden flex flex-col justify-between p-4">
+            <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            
+            <div className="flex items-center justify-between text-[11px] text-slate-400 relative z-10">
+              <span className="flex items-center gap-1 font-bold text-amber-400">
+                <Store className="w-3.5 h-3.5" /> Indore Kirana Hub
+              </span>
+              <span className="font-mono text-emerald-400 font-bold">
+                Distance: {Math.max(0.1, ((1 - riderProgressPercent / 100) * 1.8)).toFixed(1)} km left
+              </span>
+              <span className="flex items-center gap-1 font-bold text-emerald-300">
+                <MapPin className="w-3.5 h-3.5" /> {persona.name}'s Doorstep
+              </span>
+            </div>
+
+            {/* Moving Rider Track Line */}
+            <div className="relative w-full my-auto z-10">
+              <div className="h-3 bg-slate-950 rounded-full border border-slate-700 overflow-hidden relative">
+                <div 
+                  style={{ width: `${riderProgressPercent}%` }} 
+                  className="h-full bg-gradient-to-r from-amber-500 via-emerald-400 to-emerald-500 transition-all duration-700 ease-linear rounded-full shadow-lg shadow-emerald-500/30"
+                ></div>
               </div>
-              <div className="flex items-center gap-1 text-emerald-400 animate-pulse">
-                <span>- - - 🛵 - - -</span>
+
+              {/* Rider Marker */}
+              <div 
+                style={{ left: `calc(${riderProgressPercent}% - 14px)` }}
+                className="absolute -top-3.5 w-7 h-7 rounded-full bg-emerald-500 border-2 border-slate-950 flex items-center justify-center text-xs shadow-xl transition-all duration-700 ease-linear"
+              >
+                🛵
               </div>
-              <div className="flex items-center gap-1.5 bg-slate-950/90 px-3 py-1.5 rounded-xl border border-emerald-500/50 text-emerald-300">
-                <span>📍 Your Home ({persona.name.split(' ')[0]})</span>
-              </div>
+            </div>
+
+            <div className="flex items-center justify-between text-[10px] text-slate-500 relative z-10">
+              <span>Dispatched at 1.8km Mandi Node</span>
+              <span className="text-amber-400 font-semibold">ONDC Open Transport Protocol (Beckn)</span>
+              <span>Delivery Partner: Verified e-KYC</span>
             </div>
           </div>
         </div>
@@ -387,19 +436,22 @@ export const OndcCommerceTab: React.FC<OndcCommerceTabProps> = ({
               ))}
             </div>
 
-            {/* Bill Summary */}
+            {/* Bill Summary with QuickCommerce comparison */}
             <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-xs space-y-2 mb-4">
               <div className="flex justify-between text-slate-400">
-                <span>Items Subtotal:</span>
+                <span>Items Subtotal (Local Mandi Rates):</span>
                 <span>₹{cartSubtotal}</span>
               </div>
               <div className="flex justify-between text-emerald-400">
-                <span>Kirana Direct Savings:</span>
+                <span>Kirana 0% Commission Direct Savings:</span>
                 <span>-₹{cartSavings}</span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Hyperlocal Delivery Fee:</span>
                 <span>{ondcDeliveryFee === 0 ? 'FREE (Orders > ₹300)' : `₹${ondcDeliveryFee}`}</span>
+              </div>
+              <div className="p-2 rounded-xl bg-emerald-950/60 border border-emerald-500/30 text-[11px] text-emerald-300 font-semibold">
+                ✓ You saved ₹{cartSavings + 35} compared to centralized dark-store quick apps!
               </div>
               <div className="pt-2 border-t border-slate-800 flex justify-between text-sm font-black text-slate-100">
                 <span>To Pay:</span>
@@ -432,3 +484,4 @@ export const OndcCommerceTab: React.FC<OndcCommerceTabProps> = ({
     </div>
   );
 };
+

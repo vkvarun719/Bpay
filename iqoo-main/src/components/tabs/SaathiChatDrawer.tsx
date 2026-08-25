@@ -30,7 +30,9 @@ export const SaathiChatDrawer: React.FC<SaathiChatDrawerProps> = ({
   const [messages, setMessages] = useState<Array<{ sender: 'user' | 'saathi'; text: string; time: string }>>([
     {
       sender: 'saathi',
-      text: `Namaste ${persona.name}! 🙏 Main aapka AI Financial Saathi hoon. Aapke kharche, loan eligibility, ya chit funds ke baare me kuch bhi poochhein.`,
+      text: currentLang === 'en'
+        ? `Hello ${persona.name}! 👋 I am your AI Financial Advisor. Ask me anything about your expenses, loan eligibility, investments, or chit funds.`
+        : `Namaste ${persona.name}! 🙏 Main aapka AI Financial Saathi hoon. Aapke kharche, loan eligibility, ya chit funds ke baare me kuch bhi poochhein.`,
       time: 'Just now'
     }
   ]);
@@ -63,7 +65,9 @@ export const SaathiChatDrawer: React.FC<SaathiChatDrawerProps> = ({
       } else if (lower.includes('invest') || lower.includes('gold') || lower.includes('sip')) {
         reply = `Recommended Basket for ${persona.name}: Start a ₹500/mo SIP in 24K Digital Gold (MMTC-PAMP) + Nippon Nifty 50 Direct Index Plan for zero commission & 18.4% 3Y CAGR!`;
       } else {
-        reply = `Aapka question samajh aa gaya. BharatPay AI Saathi aapke data ko 100% encrypted rakhta hai. Main aapko lending, ONDC shopping, ya chit funds me madad kar sakta hoon.`;
+        reply = currentLang === 'en'
+          ? `Got it! BharatPay AI Financial Advisor keeps your data 100% encrypted. I can assist you with instant credit disbursal, ONDC mandi orders, or Chit Funds 2.0.`
+          : `Aapka question samajh aa gaya. BharatPay AI Saathi aapke data ko 100% encrypted rakhta hai. Main aapko lending, ONDC shopping, ya chit funds me madad kar sakta hoon.`;
       }
 
       const saathiMessage = { sender: 'saathi' as const, text: reply, time: 'Just now' };

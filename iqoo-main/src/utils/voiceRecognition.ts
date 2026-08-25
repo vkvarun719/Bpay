@@ -14,8 +14,9 @@ export interface ParsedVoiceIntent {
   confirmationPrompt: string;
 }
 
-export function parseFinancialSpeech(transcript: string, _lang: Language = 'hi'): ParsedVoiceIntent {
+export function parseFinancialSpeech(transcript: string, _lang: Language = 'en'): ParsedVoiceIntent {
   const text = transcript.toLowerCase().trim();
+  const isEn = _lang === 'en';
 
   // Pattern 1: Send Money (e.g., "₹200 bhejo Rahul ko", "send 500 to priya", "rahul ku 200 anupu", "500 bhejna hai ram ko")
   const amountMatch = text.match(/(?:rs\.?|inr|₹|rupaye|rupees)?\s*(\d+)\s*(?:rs\.?|inr|₹|rupaye|rupees)?/i);
@@ -25,6 +26,7 @@ export function parseFinancialSpeech(transcript: string, _lang: Language = 'hi')
     text.includes('bhej') || 
     text.includes('send') || 
     text.includes('transfer') || 
+    text.includes('pay') ||
     text.includes('anupu') || 
     text.includes('pampu') || 
     text.includes('moklo') ||
@@ -48,7 +50,9 @@ export function parseFinancialSpeech(transcript: string, _lang: Language = 'hi')
         recipient
       },
       confidence: 0.96,
-      confirmationPrompt: `${recipient} ko ₹${amount} bhejna hai? Kya aap confirm karte hain?`
+      confirmationPrompt: isEn 
+        ? `Send ₹${amount} to ${recipient}? Tap Confirm to proceed with instant UPI.` 
+        : `${recipient} ko ₹${amount} bhejna hai? Kya aap confirm karte hain?`
     };
   }
 
@@ -89,7 +93,9 @@ export function parseFinancialSpeech(transcript: string, _lang: Language = 'hi')
         quantity
       },
       confidence: 0.94,
-      confirmationPrompt: `ONDC se ${productName} order karein? Local kirana se 15 min me delivery!`
+      confirmationPrompt: isEn 
+        ? `Order ${productName} via ONDC? Hyperlocal 15-min delivery from local kirana!`
+        : `ONDC se ${productName} order karein? Local kirana se 15 min me delivery!`
     };
   }
 
@@ -103,7 +109,9 @@ export function parseFinancialSpeech(transcript: string, _lang: Language = 'hi')
         productName: text.includes('silver') ? '99.9% Digital Silver' : '24K 99.99% Digital Gold'
       },
       confidence: 0.95,
-      confirmationPrompt: `₹${amount || 500} ka 24K Digital Gold purchase karein? IDBI Trust Vault me store hoga.`
+      confirmationPrompt: isEn
+        ? `Invest ₹${amount || 500} in 24K Digital Gold? Safely stored in insured IDBI Trustee vaults.`
+        : `₹${amount || 500} ka 24K Digital Gold purchase karein? IDBI Trust Vault me store hoga.`
     };
   }
 
@@ -114,7 +122,9 @@ export function parseFinancialSpeech(transcript: string, _lang: Language = 'hi')
       rawTranscript: transcript,
       entities: {},
       confidence: 0.98,
-      confirmationPrompt: 'Aapka Bharat Credit Score 742 hai. Instant ₹1,50,000 pre-approved loan available hai bina collateral ke.'
+      confirmationPrompt: isEn
+        ? 'Your Bharat Credit Score is 742 (Good). Pre-approved collateral-free loan up to ₹1,50,000 available.'
+        : 'Aapka Bharat Credit Score 742 hai. Instant ₹1,50,000 pre-approved loan available hai bina collateral ke.'
     };
   }
 
@@ -125,7 +135,9 @@ export function parseFinancialSpeech(transcript: string, _lang: Language = 'hi')
       rawTranscript: transcript,
       entities: {},
       confidence: 0.97,
-      confirmationPrompt: 'Aapke Bharat Wallet me kul ₹42,850 aur UPI Lite me ₹450 available hai.'
+      confirmationPrompt: isEn
+        ? 'Your Total Bharat Wallet Balance is ₹42,850, and UPI Lite offline balance is ₹450.'
+        : 'Aapke Bharat Wallet me kul ₹42,850 aur UPI Lite me ₹450 available hai.'
     };
   }
 
@@ -134,6 +146,8 @@ export function parseFinancialSpeech(transcript: string, _lang: Language = 'hi')
     rawTranscript: transcript,
     entities: {},
     confidence: 0.70,
-    confirmationPrompt: `Aapne bola: "${transcript}". Kya aap iske baare me AI Saathi se poochna chahte hain?`
+    confirmationPrompt: isEn
+      ? `You said: "${transcript}". Would you like to ask AI Financial Saathi about this?`
+      : `Aapne bola: "${transcript}". Kya aap iske baare me AI Saathi se poochna chahte hain?`
   };
 }

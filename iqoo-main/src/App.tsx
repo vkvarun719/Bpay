@@ -53,7 +53,7 @@ import { translations } from './data/translations';
 
 export const App: React.FC = () => {
   // App State
-  const [currentLang, setCurrentLang] = useState<Language>('hi');
+  const [currentLang, setCurrentLang] = useState<Language>('en');
   const [currentMode, setCurrentMode] = useState<AppMode>('smartphone');
   const [activePersona, setActivePersona] = useState<UserPersona>(personas[0]); // Ramesh
   const [activeTab, setActiveTab] = useState<string>('payments');

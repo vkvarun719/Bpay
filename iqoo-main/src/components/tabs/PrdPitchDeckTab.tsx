@@ -14,7 +14,14 @@ import {
 } from 'lucide-react';
 
 export const PrdPitchDeckTab: React.FC = () => {
-  const [activeSection, setActiveSection] = useState<'overview' | 'matrix' | 'architecture' | 'economics' | 'roadmap'>('overview');
+  const [activeSection, setActiveSection] = useState<'overview' | 'submission_kit' | 'matrix' | 'architecture' | 'economics' | 'roadmap'>('overview');
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const copyToClipboard = (text: string, fieldId: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldId);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
 
   const competitiveFeatures = [
     { name: 'Voice Payments (12+ Vernacular Langs)', bharat: '✅ Full', paytm: '❌', phonepe: '❌', gpay: '❌', mobikwik: '❌' },
@@ -44,7 +51,7 @@ export const PrdPitchDeckTab: React.FC = () => {
             </span>
           </div>
           <h2 className="text-xl font-black text-slate-100">
-            BharatPay SuperApp: "Apka Paisa, Apka Bhasha, Apka Bharat"
+            BharatPay SuperApp: "Your Money, Your Language, Your Bharat"
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
             India's most inclusive AI-powered FinTech & Commerce platform for 600M+ Bharat users across Tier 2, 3, 4 cities & rural India.
@@ -55,6 +62,7 @@ export const PrdPitchDeckTab: React.FC = () => {
         <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-2xl border border-slate-800 text-xs overflow-x-auto">
           {[
             { id: 'overview', label: 'Executive Summary' },
+            { id: 'submission_kit', label: '🏆 Hackathon Form Kit' },
             { id: 'matrix', label: 'Competitive Matrix' },
             { id: 'architecture', label: 'Tech Stack & APIs' },
             { id: 'economics', label: 'Unit Economics' },
@@ -74,6 +82,87 @@ export const PrdPitchDeckTab: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* SECTION: Hackathon Submission Kit (1-Click Form Copy) */}
+      {activeSection === 'submission_kit' && (
+        <div className="space-y-6 animate-fadeIn">
+          <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/40 flex items-center justify-between">
+            <div>
+              <h3 className="font-bold text-amber-300 text-sm">📋 Ready-to-Submit Hackathon Answers</h3>
+              <p className="text-xs text-slate-300">Click any card's "Copy" button to paste directly into Devpost, Unstop, DoraHacks, or Google Forms.</p>
+            </div>
+            <span className="px-3 py-1 bg-amber-500 text-slate-950 rounded-xl font-extrabold text-xs">
+              Judge Ready 🏆
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            {/* Field 1: Project Name & Tagline */}
+            <div className="glass-panel p-5 rounded-2xl border border-slate-800 bg-slate-950 space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-amber-400">1. Project Title & Tagline</span>
+                <button
+                  onClick={() => copyToClipboard('BharatPay SuperApp — "Your Money, Your Language, Your Bharat" (India\'s Most Inclusive AI-Powered Vernacular FinTech & Hyperlocal Commerce Platform)', 'title')}
+                  className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 flex items-center gap-1 transition"
+                >
+                  {copiedField === 'title' ? '✓ Copied!' : '📋 Copy'}
+                </button>
+              </div>
+              <p className="text-xs text-slate-200 font-mono bg-slate-900 p-3 rounded-xl">
+                BharatPay SuperApp — "Your Money, Your Language, Your Bharat"
+              </p>
+            </div>
+
+            {/* Field 2: Elevator Pitch */}
+            <div className="glass-panel p-5 rounded-2xl border border-slate-800 bg-slate-950 space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-amber-400">2. Elevator Pitch (Under 100 Words)</span>
+                <button
+                  onClick={() => copyToClipboard('BharatPay is an AI-first financial superapp built for India\'s 600M+ underserved citizens across Tier 2, 3, 4 cities and rural Bharat. Combining Voice-First UPI in 12+ Indian languages, 100% Feature Phone Offline Parity (*99# USSD & IVR), 0%-Commission ONDC Kirana Commerce with Live GPS Rider Dispatch, Blockchain Chit Funds 2.0, Alternative Data AI Underwriting for 30-Second Micro-Loans, and AI Deepfake Voice Scam Protection, BharatPay democratizes finance for every Indian regardless of smartphone access, literacy level, or credit history.', 'pitch')}
+                  className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 flex items-center gap-1 transition"
+                >
+                  {copiedField === 'pitch' ? '✓ Copied!' : '📋 Copy'}
+                </button>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed bg-slate-900 p-3 rounded-xl">
+                BharatPay is an AI-first financial superapp built for India's 600M+ underserved citizens across Tier 2, 3, 4 cities and rural Bharat. Combining Voice-First UPI in 12+ Indian languages, 100% Feature Phone Offline Parity (*99# USSD & IVR), 0%-Commission ONDC Kirana Commerce with Live GPS Rider Dispatch, Blockchain Chit Funds 2.0, Alternative Data AI Underwriting for 30-Second Micro-Loans, and AI Deepfake Voice Scam Protection, BharatPay democratizes finance for every Indian regardless of smartphone access, literacy level, or credit history.
+              </p>
+            </div>
+
+            {/* Field 3: Problem Statement */}
+            <div className="glass-panel p-5 rounded-2xl border border-slate-800 bg-slate-950 space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-amber-400">3. Problem Statement & Target Audience</span>
+                <button
+                  onClick={() => copyToClipboard('Over 600M Indians face 4 critical barriers: (1) Complex English UI excludes non-English speakers, (2) 400M feature phone users are locked out of smartphone FinTech, (3) 40% informal merchants have zero CIBIL score and pay 36-60% interest to moneylenders, (4) Dark-store quick commerce extracts 20-30% markups crushing local Kiranas, and (5) AI voice clones cause ₹1,750+ Cr in cyber scam losses targeting vulnerable elders.', 'problem')}
+                  className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 flex items-center gap-1 transition"
+                >
+                  {copiedField === 'problem' ? '✓ Copied!' : '📋 Copy'}
+                </button>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed bg-slate-900 p-3 rounded-xl">
+                Over 600M Indians face 4 critical barriers: (1) Complex English UI excludes non-English speakers, (2) 400M feature phone users are locked out of smartphone FinTech, (3) 40% informal merchants have zero CIBIL score and pay 36-60% interest to moneylenders, (4) Dark-store quick commerce extracts 20-30% markups crushing local Kiranas, and (5) AI voice clones cause ₹1,750+ Cr in cyber scam losses targeting vulnerable elders.
+              </p>
+            </div>
+
+            {/* Field 4: Technical Innovation & Architecture */}
+            <div className="glass-panel p-5 rounded-2xl border border-slate-800 bg-slate-950 space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-amber-400">4. Technical Architecture & Innovation</span>
+                <button
+                  onClick={() => copyToClipboard('Built with React 19, TypeScript, and Tailwind CSS 4. Integrates Web Audio API DTMF dual-frequency synthesis for tactile keypads, Web Speech Synthesis for vernacular voice announcements in 12 languages, Beckn Protocol for ONDC commerce with real-time GPS dispatch simulation, XGBoost alternative credit scoring gauge, smart contract trust ledger for Chit Funds 2.0, and synthetic audio spectral anomaly detection for deepfake fraud defense.', 'tech')}
+                  className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 flex items-center gap-1 transition"
+                >
+                  {copiedField === 'tech' ? '✓ Copied!' : '📋 Copy'}
+                </button>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed bg-slate-900 p-3 rounded-xl">
+                Built with React 19, TypeScript, and Tailwind CSS 4. Integrates Web Audio API DTMF dual-frequency synthesis for tactile keypads, Web Speech Synthesis for vernacular voice announcements in 12 languages, Beckn Protocol for ONDC commerce with real-time GPS dispatch simulation, XGBoost alternative credit scoring gauge, smart contract trust ledger for Chit Funds 2.0, and synthetic audio spectral anomaly detection for deepfake fraud defense.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* SECTION 1: Executive Overview */}
       {activeSection === 'overview' && (

@@ -29,7 +29,14 @@ export const VoiceCommerceModal: React.FC<VoiceCommerceModalProps> = ({
   const [speechSupported, setSpeechSupported] = useState<boolean>(true);
   const [feedbackMessage, setFeedbackMessage] = useState<string>('');
 
-  const sampleVoicePhrases: { text: string; label: string; icon: string }[] = [
+  const sampleVoicePhrases: { text: string; label: string; icon: string }[] = currentLang === 'en' ? [
+    { text: 'Send ₹200 to Rahul via UPI', label: 'Send ₹200 to Rahul', icon: '💸' },
+    { text: 'Order 5kg Aashirvaad Atta', label: 'Buy 5kg Atta (ONDC)', icon: '🌾' },
+    { text: 'Order 1L Fortune Mustard Oil', label: 'Order Mustard Oil', icon: '🛢️' },
+    { text: 'Invest ₹500 in 24K Digital Gold', label: 'Invest ₹500 in Gold', icon: '🪙' },
+    { text: 'Check my loan eligibility and credit score', label: 'Check Credit & Loans', icon: '📊' },
+    { text: 'Transfer ₹1000 to Priya', label: 'Send ₹1000 to Priya', icon: '👩🏻' },
+  ] : [
     { text: 'Rahul ko ₹200 bhejo UPI se', label: 'Send ₹200 to Rahul', icon: '💸' },
     { text: 'Mujhe 5kg Aashirvaad Atta chahiye', label: 'Buy 5kg Atta (ONDC)', icon: '🌾' },
     { text: 'Fortune Mustard Oil 1L order karo', label: 'Order Mustard Oil', icon: '🛢️' },

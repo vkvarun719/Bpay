@@ -38,10 +38,10 @@ export interface TranslationDictionary {
 export const translations: Record<Language, TranslationDictionary> = {
   en: {
     appName: 'BharatPay SuperApp',
-    tagline: 'Apka Paisa, Apka Bhasha, Apka Bharat',
+    tagline: 'Your Money, Your Language, Your Bharat',
     searchPlaceholder: 'Search bills, merchants, stocks or speak...',
     voiceActionPrompt: 'Tap mic & speak: "Send ₹200 to Rahul" or "Buy 5kg Atta"',
-    speakAndBuy: 'Voice Commerce (Bolo aur Kharido)',
+    speakAndBuy: 'Voice Commerce (Speak & Buy)',
     sendMoney: 'Send Money',
     scanQr: 'Scan Any QR',
     receiveMoney: 'Receive / My QR',

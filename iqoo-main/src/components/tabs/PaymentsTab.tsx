@@ -300,23 +300,41 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({
         {/* Right Col: BharatPay Smart Merchant QR & UPI Details */}
         <div className="glass-panel p-6 rounded-3xl border border-slate-800 bg-slate-950/80 shadow-xl flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-3">
               <h3 className="font-bold text-slate-100 flex items-center gap-2">
                 <QrCode className="w-4 h-4 text-emerald-400" />
-                <span>My BharatPay QR</span>
+                <span>Dynamic BharatPay Merchant QR</span>
               </h3>
               <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                Active
+                Live Dynamic VPA
               </span>
+            </div>
+
+            {/* Dynamic Amount Configuration */}
+            <div className="mb-3 p-3 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400">Set Custom QR Request (₹):</span>
+                <span className="font-bold text-amber-400 font-mono">₹{amountInput || '0'}</span>
+              </div>
+              <input
+                type="number"
+                value={amountInput}
+                onChange={(e) => setAmountInput(e.target.value)}
+                placeholder="Enter amount to embed in QR..."
+                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-amber-300 font-bold focus:outline-none focus:border-amber-500"
+              />
             </div>
 
             {/* QR Mock Card */}
             <div className="p-4 rounded-2xl bg-white text-slate-950 text-center shadow-lg my-2">
-              <div className="text-[11px] font-black tracking-wider uppercase text-amber-600 mb-2">
-                🇮🇳 BharatPay Merchant QR
+              <div className="text-[11px] font-black tracking-wider uppercase text-amber-600 mb-1">
+                🇮🇳 BharatPay Smart QR
               </div>
-              <div className="w-36 h-36 mx-auto bg-slate-900 rounded-xl p-2 flex items-center justify-center">
-                {/* SVG QR Code Simulation */}
+              <div className="text-[10px] font-bold text-slate-700 mb-2">
+                {amountInput && Number(amountInput) > 0 ? `Requested Amount: ₹${amountInput}` : 'Accept Any Amount'}
+              </div>
+              <div className="w-36 h-36 mx-auto bg-slate-900 rounded-xl p-2 flex items-center justify-center shadow-inner">
+                {/* SVG QR Code Simulation with Dynamic Center Pill */}
                 <svg viewBox="0 0 100 100" className="w-full h-full text-white fill-current">
                   <rect width="30" height="30" fill="white" />
                   <rect x="5" y="5" width="20" height="20" fill="black" />
@@ -330,8 +348,8 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({
                   <rect x="5" y="75" width="20" height="20" fill="black" />
                   <rect x="10" y="80" width="10" height="10" fill="white" />
 
-                  <circle cx="50" cy="50" r="12" fill="#FF9933" />
-                  <circle cx="50" cy="50" r="5" fill="#000080" />
+                  <circle cx="50" cy="50" r="13" fill="#FF9933" />
+                  <circle cx="50" cy="50" r="6" fill="#000080" />
                   
                   <rect x="35" y="10" width="8" height="8" fill="white" />
                   <rect x="55" y="15" width="8" height="8" fill="white" />
@@ -342,11 +360,13 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({
                 </svg>
               </div>
               <p className="text-xs font-bold text-slate-900 mt-2">{persona.name}</p>
-              <p className="text-[11px] text-slate-600 font-mono">{persona.name.toLowerCase().replace(/\s+/g, '')}@bharatpay</p>
+              <p className="text-[10px] text-slate-600 font-mono">
+                upi://pay?pa={persona.name.toLowerCase().replace(/\s+/g, '')}@bharatpay&am={amountInput || '0'}
+              </p>
             </div>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-slate-800 text-xs text-slate-400 space-y-2">
+          <div className="mt-3 pt-3 border-t border-slate-800 text-xs text-slate-400 space-y-1.5">
             <div className="flex justify-between">
               <span>Account Aggregator:</span>
               <span className="text-slate-200 font-semibold">Live (RBI AA Linked)</span>

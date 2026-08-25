@@ -11,7 +11,10 @@ import {
   Flame, 
   Play, 
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  Volume2,
+  Printer,
+  QrCode
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { ShikshaLesson, UserPersona, Language } from '../../types';
@@ -33,11 +36,20 @@ export const ShikshaLiteracyTab: React.FC<ShikshaLiteracyTabProps> = ({
   const [quizSubmitted, setQuizSubmitted] = useState<boolean>(false);
   const [totalCoins, setTotalCoins] = useState<number>(350);
   const [showCertificateModal, setShowCertificateModal] = useState<boolean>(false);
+  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
   const handleStartLesson = (lesson: ShikshaLesson) => {
     setActiveLesson(lesson);
     setSelectedOption(null);
     setQuizSubmitted(false);
+    setIsPlayingAudio(false);
+  };
+
+  const handlePlayAudioSummary = () => {
+    if (!activeLesson) return;
+    setIsPlayingAudio(true);
+    const textToSpeak = `${activeLesson.titleVernacular[currentLang] || activeLesson.title}. ${activeLesson.quiz.explanation}`;
+    soundEngine.speakText(textToSpeak, currentLang);
   };
 
   const handleAnswerSubmit = () => {
@@ -48,6 +60,7 @@ export const ShikshaLiteracyTab: React.FC<ShikshaLiteracyTabProps> = ({
 
     if (isCorrect) {
       soundEngine.playSuccessChime();
+      soundEngine.playCashRegister();
       setTotalCoins(prev => prev + activeLesson.coinsReward);
       try {
         confetti({ particleCount: 75, spread: 70 });
@@ -210,10 +223,15 @@ export const ShikshaLiteracyTab: React.FC<ShikshaLiteracyTabProps> = ({
                 <span>Vernacular Video Summary (Truefan AI)</span>
                 <span className="text-amber-400 font-semibold">175+ Indian Dialects</span>
               </div>
-              <div className="h-32 rounded-xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center text-center p-4">
-                <Play className="w-10 h-10 text-amber-400 mb-2 fill-current cursor-pointer hover:scale-110 transition" />
+              <div 
+                onClick={handlePlayAudioSummary}
+                className="h-32 rounded-xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center text-center p-4 cursor-pointer hover:border-amber-500/50 transition group"
+              >
+                <div className="w-12 h-12 rounded-full bg-amber-500/20 group-hover:bg-amber-500 text-amber-400 group-hover:text-slate-950 flex items-center justify-center mb-2 transition shadow">
+                  <Volume2 className="w-6 h-6" />
+                </div>
                 <p className="text-xs font-semibold text-slate-200">
-                  Tap to listen to 60-second audio summary in your dialect
+                  {isPlayingAudio ? '🔊 Playing Vernacular Audio...' : 'Tap to listen to 60-second audio summary in your language'}
                 </p>
               </div>
             </div>
@@ -289,39 +307,70 @@ export const ShikshaLiteracyTab: React.FC<ShikshaLiteracyTabProps> = ({
         </div>
       )}
 
-      {/* Shareable Certificate Modal */}
+      {/* Shareable & Printable Official Certificate Modal */}
       {showCertificateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-lg glass-panel bg-slate-950 border border-purple-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl text-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+          <div className="relative w-full max-w-xl bg-white text-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-y-auto max-h-[90vh] font-serif">
             
-            <div className="p-6 rounded-2xl bg-gradient-to-tr from-slate-900 via-purple-950 to-slate-900 border-2 border-amber-400 text-center shadow-xl mb-4">
-              <div className="text-3xl mb-2">🇮🇳 📜</div>
-              <div className="text-xs uppercase tracking-widest text-amber-400 font-extrabold">Certificate of Excellence</div>
-              <h3 className="text-xl font-black text-slate-100 my-2">Bharat Financial Literacy Master</h3>
-              <p className="text-xs text-slate-300">Proudly awarded to</p>
-              <div className="text-lg font-black text-amber-300 border-b border-dashed border-amber-500/50 pb-1 mx-auto max-w-[240px] my-1">
-                {persona.name}
+            {/* Certificate Outer Gold Border Frame */}
+            <div className="p-6 rounded-2xl border-4 border-amber-600 bg-amber-50/50 relative">
+              <div className="absolute top-2 right-2 text-[10px] font-sans font-bold text-slate-500">
+                Govt. Initiative • NCFE Aligned
               </div>
-              <p className="text-[11px] text-slate-400 mt-2">
-                For demonstrating excellence in UPI Security, ONDC Commerce, Fraud Prevention, and Multi-Asset Investing.
-              </p>
-              <div className="mt-4 pt-3 border-t border-slate-800 flex justify-between text-[10px] text-slate-500 font-mono">
-                <span>CERT ID: BHARAT-SHK-{persona.id.toUpperCase()}-2026</span>
-                <span>VERIFIED BY NPCI & SEBI</span>
+
+              <div className="text-center space-y-2">
+                <div className="text-3xl">🇮🇳</div>
+                <div className="text-[11px] uppercase tracking-widest text-amber-900 font-black font-sans">
+                  NATIONAL FINANCIAL LITERACY MISSION (NFLM)
+                </div>
+                <h3 className="text-2xl font-black text-slate-900 tracking-tight">
+                  Certificate of Financial Excellence
+                </h3>
+                <p className="text-xs text-slate-600 italic font-sans">This is to certify that</p>
+                <div className="text-2xl font-black text-blue-950 border-b-2 border-slate-300 pb-1 mx-auto max-w-[320px] font-sans">
+                  {persona.name}
+                </div>
+                <p className="text-xs text-slate-700 font-sans leading-relaxed pt-2">
+                  has successfully passed the comprehensive modules on <strong>UPI Safety, ONDC Hyperlocal Commerce, AI Fraud Identification, Micro-Credit Underwriting, and Chit Funds 2.0</strong>.
+                </p>
+              </div>
+
+              {/* Badges & QR */}
+              <div className="mt-6 pt-4 border-t border-amber-300 flex items-center justify-between font-sans text-[11px]">
+                <div>
+                  <div className="font-bold text-slate-900">Bharat National Registry</div>
+                  <div className="font-mono text-slate-500 text-[10px]">ID: NFLM-2026-BHARATPAY-{persona.id.toUpperCase()}</div>
+                </div>
+                <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-300">
+                  <QrCode className="w-5 h-5 text-slate-800" />
+                  <span className="font-mono text-[9px] text-slate-600">SEBI / RBI<br/>Verified</span>
+                </div>
               </div>
             </div>
 
-            <div className="flex gap-2">
+            <div className="mt-5 flex gap-2 font-sans">
               <button
-                onClick={() => alert('Certificate link copied! Share on WhatsApp.')}
-                className="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-purple-500/20"
+                onClick={() => {
+                  window.print();
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow transition"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Print / Download PDF</span>
+              </button>
+              <button
+                onClick={() => {
+                  soundEngine.playSuccessChime();
+                  alert('Certificate link copied! Share on WhatsApp to earn +50 Bharat Coins.');
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow transition"
               >
                 <Share2 className="w-3.5 h-3.5" />
                 <span>Share on WhatsApp</span>
               </button>
               <button
                 onClick={() => setShowCertificateModal(false)}
-                className="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs"
+                className="px-4 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs transition"
               >
                 Close
               </button>
@@ -334,3 +383,4 @@ export const ShikshaLiteracyTab: React.FC<ShikshaLiteracyTabProps> = ({
     </div>
   );
 };
+

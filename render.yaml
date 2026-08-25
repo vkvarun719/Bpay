@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: bharatpay-superapp
+    env: static
+    buildCommand: cd iqoo-main && npm install && npm run build
+    staticPublishPath: iqoo-main/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
